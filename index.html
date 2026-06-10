@@ -578,8 +578,13 @@
       statusEl.textContent = '📧 Sending notification...';
       statusEl.style.display = 'block';
 
-      // Get the respondent's name (could prompt or use a default)
-      const respondentName = prompt('What\'s your name? (so they know who said Yes!)') || 'Someone';
+      // Get the respondent's name
+      let respondentName = 'Someone 💕';
+      try {
+        respondentName = prompt('What\'s your name? (so they know who said Yes!)') || 'Someone 💕';
+      } catch(e) {
+        respondentName = 'Someone 💕';
+      }
 
       fetch('/api/notify', {
         method: 'POST',
