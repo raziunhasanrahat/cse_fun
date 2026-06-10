@@ -586,7 +586,11 @@
         respondentName = 'Someone 💕';
       }
 
-      fetch('/api/notify', {
+      // Detect if running on Vercel or local
+      const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiUrl = isVercel ? '/api/notify' : 'http://localhost:3000/api/notify';
+
+      fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -602,6 +606,7 @@
           statusEl.textContent = '✅ Notification sent! They\'ll get an email. 💌';
         } else {
           statusEl.textContent = '✅ Yay! (Couldn\'t send email, but they\'ll know when they check the link!)';
+          if (data.info) console.log(data.info);
         }
         statusEl.style.display = 'block';
       })
