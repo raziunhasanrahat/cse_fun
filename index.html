@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎀 CSE Fun 💜</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 30%, #e8eaf6 60%, #fce4ec 100%);
+      font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Floating Sanrio decorations */
+    .bg-deco {
+      position: fixed;
+      pointer-events: none;
+      font-size: 2rem;
+      opacity: 0.25;
+      animation: floatDeco 6s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @keyframes floatDeco {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(10deg); }
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(233, 30, 99, 0.15), 0 0 0 3px #f8bbd0, 0 0 0 6px #ce93d8;
+      position: relative;
+      max-width: 500px;
+      width: 90%;
+      z-index: 1;
+    }
+
+    /* Cute bow accent */
+    .container::before {
+      content: '🎀';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+    }
+
+    h1 {
+      color: #e91e63;
+      margin-bottom: 0.75rem;
+      font-size: 1.6rem;
+      font-weight: 900;
+    }
+
+    .hello-kitty-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .question {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: #6a1b9a;
+      font-weight: 700;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #e91e63;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(233, 30, 99, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(233, 30, 99, 0.4);
+    }
+
+    .yes {
+      background: linear-gradient(135deg, #e91e63, #ad1457);
+    }
+
+    .no {
+      position: relative;
+      background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+    }
+
+    .copy {
+      background: linear-gradient(135deg, #42a5f5, #1565c0);
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      pointer-events: none;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      50% { transform: translateY(-30px) rotate(180deg) scale(1.2); }
+      100% { transform: translateY(0) rotate(360deg) scale(1); }
+    }
+
+    .stages {
+      display: none;
+    }
+
+    .desperate-messages {
+      font-size: 0.9rem;
+      color: #7b1fa2;
+      margin-top: 1rem;
+      font-style: italic;
+      min-height: 20px;
+      font-weight: 700;
+    }
+
+    .size-increase {
+      transform: scale(1.2);
+    }
+
+    .dramatic {
+      animation: shake 0.5s ease-in-out infinite;
+      background: linear-gradient(135deg, #ff1744, #d50000) !important;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .name-input, .msg-input {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #f8bbd0;
+      border-radius: 2rem;
+      margin: 0.4rem 0;
+      width: 85%;
+      max-width: 300px;
+      outline: none;
+      font-family: 'Nunito', sans-serif;
+      background: #fff5f7;
+      transition: all 0.3s;
+    }
+
+    .msg-input {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .name-input:focus, .msg-input:focus {
+      border-color: #ce93d8;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(206, 147, 216, 0.2);
+    }
+
+    .name-screen, .share-screen {
+      text-align: center;
+    }
+
+    .copy-message {
+      color: #4CAF50;
+      margin-top: 1rem;
+      display: none;
+      font-weight: 700;
+    }
+
+    #heart-container {
+      position: relative;
+      height: 100px;
+      margin-top: 1rem;
+      overflow: hidden;
+    }
+
+    .success-emoji {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .custom-msg-display {
+      font-size: 1.1rem;
+      color: #6a1b9a;
+      background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      font-style: italic;
+      font-weight: 700;
+      border: 2px dashed #ce93d8;
+      position: relative;
+    }
+
+    .custom-msg-display::before {
+      content: '💬';
+      position: absolute;
+      top: -12px;
+      left: -10px;
+      font-size: 1.2rem;
+    }
+
+    .input-label {
+      display: block;
+      text-align: left;
+      font-size: 0.85rem;
+      color: #7b1fa2;
+      font-weight: 700;
+      margin: 0.5rem 0 0.2rem;
+      width: 85%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .kuromi-icon {
+      display: inline-block;
+    }
+
+    .sparkle-row {
+      font-size: 1.2rem;
+      letter-spacing: 8px;
+      margin: 0.5rem 0;
+      opacity: 0.7;
+    }
+
+    .footer-cute {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: #ce93d8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background decorations -->
+  <div class="bg-deco" style="top:5%;left:5%;">🎀</div>
+  <div class="bg-deco" style="top:15%;right:8%;animation-delay:1s;">🐱</div>
+  <div class="bg-deco" style="bottom:20%;left:8%;animation-delay:2s;">💜</div>
+  <div class="bg-deco" style="bottom:10%;right:5%;animation-delay:0.5s;">🎀</div>
+  <div class="bg-deco" style="top:40%;left:3%;animation-delay:1.5s;">⭐</div>
+  <div class="bg-deco" style="top:30%;right:4%;animation-delay:2.5s;">🌸</div>
+  <div class="bg-deco" style="bottom:40%;left:4%;animation-delay:0.8s;">💀</div>
+  <div class="bg-deco" style="bottom:35%;right:3%;animation-delay:1.2s;">🎀</div>
+
+  <div class="container">
+    <!-- Name Input Screen -->
+    <div id="name-screen" class="name-screen">
+      <div class="hello-kitty-icon">🐱💀🎀</div>
+      <h1>CSE Fun Time! 💝</h1>
+      <p class="question">Let's make something fun! 💕</p>
+
+      <label class="input-label">Their name *</label>
+      <input type="text" class="name-input" id="name-input" placeholder="Enter their name">
+
+      <label class="input-label">Your message (optional)</label>
+      <textarea class="msg-input" id="msg-input" placeholder="e.g. Will you go on a date with me? 💕">Will you go out with me? 🎀</textarea>
+
+      <button class="yes" onclick="createProposal()">Create Proposal ✨</button>
+      <div class="sparkle-row">⭐ 💖 🌸 💜 🎀</div>
+    </div>
+
+    <!-- Share Screen -->
+    <div id="share-screen" class="share-screen" style="display: none;">
+      <div class="hello-kitty-icon">🐱💕🎀</div>
+      <h1>Your Message is Ready! 💌</h1>
+      <p class="question">What would you like to do?</p>
+      <div class="buttons">
+        <button class="yes" onclick="startGame()">Play Now 🎮</button>
+        <button class="copy" onclick="copyLink()">Copy Link 🔗</button>
+      </div>
+      <p id="copy-message" class="copy-message">Link copied to clipboard! 📋</p>
+      <div class="sparkle-row">⭐ 💖 🌸 💜 🎀</div>
+    </div>
+
+    <!-- Proposal Game -->
+    <div id="proposal-screen" style="display: none;">
+      <div id="custom-msg-box" class="custom-msg-display"></div>
+
+      <!-- Stage 1 -->
+      <div id="stage1">
+        <div class="hello-kitty-icon">🐱💀🎀</div>
+        <h1>Hey <span class="name-display"></span>! 💕</h1>
+        <div class="buttons">
+          <button class="yes" onclick="acceptValentine()">Yes! I'll do that! 😊💖</button>
+          <button class="no" onmouseover="handleNo(this, 0)">No 😢</button>
+        </div>
+        <p class="desperate-messages"></p>
+      </div>
+
+      <!-- Stage 2 -->
+      <div id="stage2" class="stages">
+        <div class="hello-kitty-icon">🥺💜</div>
+        <h1>Are you really, really sure? 🥺</h1>
+        <div class="buttons">
+          <button class="yes size-increase" onclick="acceptValentine()">Yes! I'll do that! 💖🎀</button>
+          <button class="no" onmouseover="handleNo(this, 1)">Still no 💔</button>
+        </div>
+        <p class="desperate-messages"></p>
+      </div>
+
+      <!-- Stage 3 -->
+      <div id="stage3" class="stages">
+        <div class="hello-kitty-icon">😭💀💜</div>
+        <h1>Final chance! Think carefully... 😭</h1>
+        <div class="buttons">
+          <button class="yes dramatic" onclick="acceptValentine()">OK FINE, YES! 💝🎀</button>
+          <button class="no" onmouseover="handleNo(this, 2)">Nope 🚫</button>
+        </div>
+        <p class="desperate-messages"></p>
+      </div>
+
+      <!-- Success Screen -->
+      <div id="success" class="stages">
+        <div class="hello-kitty-icon">🎉🐱💀🎀</div>
+        <h1>YAAAAAY! 🎉</h1>
+        <p class="question">Thanks <span class="name-display"></span>! You've made me the happiest person alive! 💑</p>
+        <div id="heart-container"></div>
+        <div class="sparkle-row">⭐ 💖 🌸 💜 🎀</div>
+      </div>
+    </div>
+    <div class="footer-cute">🎀 CSE Fun — made with 💖 🎀</div>
+  </div>
+
+  <script>
+    const desperateMessages = [
+      "My mom said we'd be cute together... 🥺",
+      "I learned how to cook just for you! 👩‍🍳",
+      "I've already told everyone you said yes... 🙈",
+      "I have chocolate... 🍫",
+      "But I already bought matching Kuromi outfits! 💜",
+      "What about our future cats? 🐱",
+      "I'll share my Netflix password... 📺",
+      "I wrote a poem about you... 📝",
+      "I saved you the last slice of pizza! 🍕",
+      "But who will laugh at my bad jokes? 😅",
+      "My therapist says this is healthy... 🛋️",
+      "I named my Hello Kitty plush after you! 🎀",
+      "I already picked out our song... 🎵",
+      "The penguins at the zoo are rooting for us! 🐧",
+      "But I already made a playlist! 🎶",
+      "My Kuromi collection needs a second owner... 💀",
+      "I'll buy you all the Sanrio stuff! 🛍️",
+      "But I'm wearing my best outfit! 👗"
+    ];
+
+    let currentStage = 1;
+    let noCount = 0;
+
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const name = urlParams.get('name');
+      const msg = urlParams.get('msg');
+      if (name) {
+        document.getElementById('name-screen').style.display = 'none';
+        document.getElementById('share-screen').style.display = 'none';
+        document.getElementById('proposal-screen').style.display = 'block';
+        updateNameDisplays(name);
+        if (msg) {
+          document.getElementById('custom-msg-box').textContent = msg;
+        } else {
+          document.getElementById('custom-msg-box').textContent = 'Will you go out with me? 🎀';
+        }
+      }
+    };
+
+    function createProposal() {
+      const name = document.getElementById('name-input').value.trim();
+      const msg = document.getElementById('msg-input').value.trim();
+      if (name) {
+        let newUrl = `${window.location.pathname}?name=${encodeURIComponent(name)}`;
+        if (msg) {
+          newUrl += `&msg=${encodeURIComponent(msg)}`;
+        }
+        window.history.pushState({ name: name, msg: msg }, '', newUrl);
+        document.getElementById('name-screen').style.display = 'none';
+        document.getElementById('share-screen').style.display = 'block';
+        updateNameDisplays(name);
+        if (msg) {
+          document.getElementById('custom-msg-box').textContent = msg;
+        }
+      } else {
+        document.getElementById('name-input').focus();
+        document.getElementById('name-input').style.borderColor = '#e91e63';
+        document.getElementById('name-input').style.background = '#fff0f3';
+        setTimeout(() => {
+          document.getElementById('name-input').style.borderColor = '#f8bbd0';
+          document.getElementById('name-input').style.background = '#fff5f7';
+        }, 2000);
+      }
+    }
+
+    function startGame() {
+      document.getElementById('share-screen').style.display = 'none';
+      document.getElementById('proposal-screen').style.display = 'block';
+    }
+
+    function copyLink() {
+      const currentUrl = window.location.href;
+      navigator.clipboard.writeText(currentUrl).then(() => {
+        const copyMessage = document.getElementById('copy-message');
+        copyMessage.style.display = 'block';
+        setTimeout(() => {
+          copyMessage.style.display = 'none';
+        }, 2000);
+      }).catch(() => {
+        const textArea = document.createElement('textarea');
+        textArea.value = currentUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        const copyMessage = document.getElementById('copy-message');
+        copyMessage.style.display = 'block';
+        setTimeout(() => {
+          copyMessage.style.display = 'none';
+        }, 2000);
+      });
+    }
+
+    function updateNameDisplays(name) {
+      document.querySelectorAll('.name-display').forEach(el => {
+        el.textContent = name;
+      });
+    }
+
+    function handleNo(btn, stage) {
+      noCount++;
+
+      const container = document.querySelector('.container');
+      const rect = container.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+
+      const maxX = rect.width - btnRect.width - 40;
+      const maxY = rect.height - btnRect.height - 40;
+
+      const randomX = Math.max(0, Math.random() * maxX);
+      const randomY = Math.max(0, Math.random() * maxY);
+
+      btn.style.position = 'absolute';
+      btn.style.left = `${randomX}px`;
+      btn.style.top = `${randomY}px`;
+
+      const rotation = Math.random() * 360;
+      btn.style.transform = `rotate(${rotation}deg)`;
+
+      const messageElements = document.querySelectorAll('.desperate-messages');
+      if (messageElements[stage]) {
+        messageElements[stage].textContent = desperateMessages[Math.floor(Math.random() * desperateMessages.length)];
+      }
+
+      const stageDiv = document.getElementById(`stage${currentStage}`);
+      const yesBtn = stageDiv ? stageDiv.querySelector('.yes') : null;
+      if (yesBtn) {
+        yesBtn.style.transform = `scale(${1 + noCount * 0.1})`;
+      }
+
+      if (noCount >= 5 && currentStage < 3) {
+        progressToNextStage();
+      }
+    }
+
+    function progressToNextStage() {
+      document.getElementById(`stage${currentStage}`).style.display = 'none';
+      currentStage++;
+      document.getElementById(`stage${currentStage}`).style.display = 'block';
+      noCount = 0;
+    }
+
+    function acceptValentine() {
+      document.querySelectorAll('.stages, #stage1').forEach(stage => {
+        stage.style.display = 'none';
+      });
+
+      document.getElementById('success').style.display = 'block';
+      createFloatingHearts();
+    }
+
+    function createFloatingHearts() {
+      const container = document.getElementById('heart-container');
+      const hearts = ['❤️', '💖', '💕', '💗', '💓', '💝', '🎀', '💜', '⭐', '🌸'];
+
+      setInterval(() => {
+        const heart = document.createElement('span');
+        heart.className = 'heart';
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.bottom = '0';
+        heart.style.animationDuration = (2 + Math.random() * 2) + 's';
+        container.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 4000);
+      }, 200);
+    }
+  </script>
+</body>
+</html>
