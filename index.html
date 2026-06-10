@@ -163,7 +163,7 @@
       75% { transform: translateX(5px); }
     }
 
-    .name-input, .msg-input {
+    .name-input, .msg-input, .email-input {
       padding: 0.75rem 1rem;
       font-size: 1rem;
       border: 2px solid #f8bbd0;
@@ -182,7 +182,7 @@
       min-height: 60px;
     }
 
-    .name-input:focus, .msg-input:focus {
+    .name-input:focus, .msg-input:focus, .email-input:focus {
       border-color: #ce93d8;
       background: white;
       box-shadow: 0 0 0 4px rgba(206, 147, 216, 0.2);
@@ -261,6 +261,37 @@
       font-size: 0.8rem;
       color: #ce93d8;
     }
+
+    .notification-badge {
+      font-size: 0.75rem;
+      color: #fff;
+      background: #e91e63;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 5px;
+      vertical-align: super;
+    }
+
+    .sending-notification {
+      font-size: 0.8rem;
+      color: #7b1fa2;
+      margin-top: 0.5rem;
+      font-weight: 700;
+      display: none;
+    }
+
+    .input-hint {
+      display: block;
+      font-size: 0.7rem;
+      color: #ce93d8;
+      margin-top: -0.2rem;
+      margin-bottom: 0.3rem;
+      width: 85%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -283,6 +314,10 @@
 
       <label class="input-label">Their name *</label>
       <input type="text" class="name-input" id="name-input" placeholder="Enter their name">
+
+      <label class="input-label">Your email <span class="notification-badge">🔔 get notified</span></label>
+      <input type="email" class="email-input" id="email-input" placeholder="your@email.com">
+      <span class="input-hint">You'll get an email when they say Yes!</span>
 
       <label class="input-label">Your message (optional)</label>
       <textarea class="msg-input" id="msg-input" placeholder="e.g. Will you go on a date with me? 💕">Will you go out with me? 🎀</textarea>
@@ -346,6 +381,7 @@
         <div class="hello-kitty-icon">🎉🐱💀🎀</div>
         <h1>YAAAAAY! 🎉</h1>
         <p class="question">Thanks <span class="name-display"></span>! You've made me the happiest person alive! 💑</p>
+        <p id="notification-status" class="sending-notification"></p>
         <div id="heart-container"></div>
         <div class="sparkle-row">⭐ 💖 🌸 💜 🎀</div>
       </div>
@@ -377,20 +413,30 @@
 
     let currentStage = 1;
     let noCount = 0;
+    let creatorEmail = '';
+    let recipientName = '';
+    let customMsg = '';
 
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const name = urlParams.get('name');
       const msg = urlParams.get('msg');
+      const email = urlParams.get('email');
       if (name) {
         document.getElementById('name-screen').style.display = 'none';
         document.getElementById('share-screen').style.display = 'none';
         document.getElementById('proposal-screen').style.display = 'block';
         updateNameDisplays(name);
+        recipientName = name;
         if (msg) {
           document.getElementById('custom-msg-box').textContent = msg;
+          customMsg = msg;
         } else {
           document.getElementById('custom-msg-box').textContent = 'Will you go out with me? 🎀';
+          customMsg = 'Will you go out with me? 🎀';
+        }
+        if (email) {
+          creatorEmail = email;
         }
       }
     };
@@ -398,12 +444,22 @@
     function createProposal() {
       const name = document.getElementById('name-input').value.trim();
       const msg = document.getElementById('msg-input').value.trim();
+      const email = document.getElementById('email-input').value.trim();
+
       if (name) {
         let newUrl = `${window.location.pathname}?name=${encodeURIComponent(name)}`;
         if (msg) {
           newUrl += `&msg=${encodeURIComponent(msg)}`;
         }
-        window.history.pushState({ name: name, msg: msg }, '', newUrl);
+        if (email) {
+          newUrl += `&email=${encodeURIComponent(email)}`;
+        }
+        window.history.pushState({ name, msg, email }, '', newUrl);
+
+        creatorEmail = email;
+        recipientName = name;
+        customMsg = msg || 'Will you go out with me? 🎀';
+
         document.getElementById('name-screen').style.display = 'none';
         document.getElementById('share-screen').style.display = 'block';
         updateNameDisplays(name);
@@ -505,6 +561,49 @@
 
       document.getElementById('success').style.display = 'block';
       createFloatingHearts();
+
+      // Send email notification to the creator
+      sendNotification();
+    }
+
+    function sendNotification() {
+      const statusEl = document.getElementById('notification-status');
+
+      if (!creatorEmail) {
+        statusEl.textContent = '💌 No email set — share the link and wait for their reply!';
+        statusEl.style.display = 'block';
+        return;
+      }
+
+      statusEl.textContent = '📧 Sending notification...';
+      statusEl.style.display = 'block';
+
+      // Get the respondent's name (could prompt or use a default)
+      const respondentName = prompt('What\'s your name? (so they know who said Yes!)') || 'Someone';
+
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientName: recipientName,
+          customMessage: customMsg,
+          creatorEmail: creatorEmail,
+          respondentName: respondentName
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          statusEl.textContent = '✅ Notification sent! They\'ll get an email. 💌';
+        } else {
+          statusEl.textContent = '✅ Yay! (Couldn\'t send email, but they\'ll know when they check the link!)';
+        }
+        statusEl.style.display = 'block';
+      })
+      .catch(() => {
+        statusEl.textContent = '🎉 They\'ll find out soon! 💕';
+        statusEl.style.display = 'block';
+      });
     }
 
     function createFloatingHearts() {
